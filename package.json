@@ -1,0 +1,21 @@
+{
+  "name": "log-parser-test-task",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
+    "parse": "node dist/parser.js --input ./app.log --output ./errors.json",
+    "test": "npm run clean && npm run build && mocha"
+  },
+  "author": "olegnikitindev@gmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^14.14.31",
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.4"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
