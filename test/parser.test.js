@@ -1,28 +1,35 @@
 const assert = require('assert')
-const {format} = require("../dist/format");
+const fs = require('fs/promises')
+const { Parser } = require('../parser-logic')
 
-describe('Array', function () {
-    describe('#indexOf()', function () {
-        it('should return -1 when the value is not present', function () {
-            assert.equal([1, 2, 3].indexOf(4), -1);
-        });
+describe('Parser', function () {
+    it('should read and write to some destination', async function () {
+        const givenLocation = './errors.json'
+        const givenLevel = 'error'
+
+        //when
+        await new Parser().parse('./app.log', givenLocation, givenLevel)
+
+        //then
+        const result = await fs.readFile(givenLocation, {encoding: "utf8"})
+        const parsedResult = JSON.parse(result)
+        parsedResult.forEach(it => {
+            assert.deepStrictEqual(it.loglevel, givenLevel)
+        })
     });
-});
 
-describe('format', function () {
-    it('should return proper object', function () {
-        const line = '2021-08-09T02:12:51.259Z - error - {"transactionId":"9abc55b2-807b-4361-9dbe-aa88b1b2e978","details":"Cannot find user orders list","code": 404,"err":"Not found"}'
+    it('should fail safely if location of logs is wrong', async function () {
+        const givenWrongLocation = './app1.log'
+        const givenLocation = './errors.json'
+        const givenLevel = 'error'
 
-        const result = format('error', line)
-
-        assert.deepEqual(result.code, 404)
-    });
-
-    it('should fail', function () {
-        const line = ''
-
-        const result = format('info', line)
-
-        assert.deepEqual(result, null)
+        try {
+            //when
+            await new Parser().parse(givenWrongLocation, givenLocation, givenLevel)
+            assert.fail()
+        } catch (e) {
+            //then
+            assert.ok(e)
+        }
     });
 });
